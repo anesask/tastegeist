@@ -1,0 +1,32 @@
+.env
+.env.*
+!.env.example
+.python-version
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+# Qloo data must not be published (Qloo terms): cache and precomputed runs stay server-side
+backend/data/
+backend/data-before-restore-*/
+backend/backups/
+*.sqlite3
+frontend/test-results/
+frontend/playwright-report/
+backend/static/
+
+# Demo video work folder (recordings, voice, ElevenLabs key)
+/video/
+
+# Internal working notes (not published)
+OPEN_POINTS.md
+CLAUDE.md
+# Devpost upload kit (local only)
+/tastegeist-submission/
+design/
+deploy/data/
+deploy/backups/
+
+# Planning and API notes stay local
+docs/

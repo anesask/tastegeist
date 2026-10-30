@@ -1,0 +1,8 @@
+# The product pages are public; campaigns, reports and the API are not for search engines.
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /report/
+Disallow: /api/
+Disallow: /ops
+Sitemap: https://tastegeist.app/sitemap.xml

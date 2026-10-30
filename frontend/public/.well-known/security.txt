@@ -1,0 +1,5 @@
+# Report vulnerabilities in Tastegeist. Please do not test against other users' data.
+Contact: https://github.com/anesask/tastegeist/security/advisories/new
+Policy: https://tastegeist.com/security
+Preferred-Languages: en, de
+Expires: 2027-10-31T00:00:00.000Z

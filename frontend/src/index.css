@@ -1,0 +1,499 @@
+@import 'tailwindcss';
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/*
+ * Tastegeist design tokens: "warm ink". Paper and warm black like a print magazine; the zones
+ * carry the only color (terracotta, sage, ochre, rose, slate). The brand itself is monochrome,
+ * like the logo: primary actions, links and selection are ink on paper (light) or paper on
+ * ink (dark). Token names are historical: coral = terracotta, mint = sage, amber = ochre,
+ * lilac = dusty rose. Every text pair below passes WCAG AA.
+ */
+:root {
+  --bg: #f6f3ee;
+  --surface: #fffdf9;
+  --surface-2: #efebe4;
+  --line: #e3ddd3;
+  --ink: #1a1714;
+  --ink-2: #3d3833;
+  --mute: #6f675e;
+  --brand: #1a1714;
+  --brand-ink: #1a1714;
+  --brand-soft: #ebe6de;
+  --on-brand: #f6f3ee;
+  --lilac: #a4516b;
+  --lilac-soft: #f6e9ed;
+  --mint: #4f7a4b;
+  --mint-soft: #e9f0e6;
+  --coral: #b5512d;
+  --coral-soft: #f8e7df;
+  --amber: #8a6414;
+  --amber-soft: #f5ecd8;
+  --slate: #56708f;
+  --shadow: 0 1px 2px rgb(26 23 20 / 0.04), 0 4px 16px rgb(26 23 20 / 0.06);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0b0a09;
+  --surface: #141210;
+  --surface-2: #1d1a17;
+  --line: #2a2622;
+  --ink: #f3efe7;
+  --ink-2: #d4cec4;
+  --mute: #9b948a;
+  --brand: #f3efe7;
+  --brand-ink: #f3efe7;
+  --brand-soft: #262220;
+  --on-brand: #0b0a09;
+  --lilac: #d18aa0;
+  --lilac-soft: #2e1f24;
+  --mint: #8fae8b;
+  --mint-soft: #1c241b;
+  --coral: #e07a52;
+  --coral-soft: #2e1b13;
+  --amber: #d4a43a;
+  --amber-soft: #2b2312;
+  --slate: #7c93b8;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.3);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-mute: var(--mute);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand: var(--on-brand);
+  --color-lilac: var(--lilac);
+  --color-lilac-soft: var(--lilac-soft);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-coral: var(--coral);
+  --color-coral-soft: var(--coral-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-slate: var(--slate);
+  --shadow-card: var(--shadow);
+}
+
+@theme {
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Editorial serif for the landing, static pages and editorial moments in the app.
+     Instrument Serif ships regular and italic only: emphasis is italic, never bold. */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  /* Type scale (BRAND.md): 12 / 14 / 16 / 20 / 28 / 40 / 64 / 96.
+     The three display steps are fluid and are the only sizes the serif is used at. */
+  --text-hero: clamp(3rem, 1.6rem + 4.4vw, 6rem);
+  --text-statement: clamp(2.25rem, 1.4rem + 2.6vw, 4rem);
+  --text-title: clamp(2rem, 1.6rem + 1vw, 2.5rem);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+/*
+ * Typography rules (see docs/BRAND.md):
+ * 1. Headings balance their lines, so a heading never ends on an orphan word.
+ * 2. Paragraphs wrap "pretty" (no single-word last lines where the browser can avoid it).
+ * 3. Nothing hyphenates or breaks inside a word; long names move to the next line whole.
+ * 4. The display serif is never synthesised bold; Inter carries weight.
+ * 5. Numbers in stats and tables use tabular figures.
+ */
+h1,
+h2,
+h3,
+h4,
+.text-hero,
+.text-statement,
+.text-title,
+blockquote {
+  text-wrap: balance;
+}
+p,
+li,
+dd,
+figcaption {
+  text-wrap: pretty;
+}
+html {
+  hyphens: manual;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.font-display {
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.012em;
+}
+.font-sans.text-statement,
+h1.font-bold,
+h2.font-bold {
+  letter-spacing: -0.028em;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+.measure {
+  max-width: 65ch;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Text roles. Inter carries every UI size and every number; the serif only the display steps. */
+.t-h1 {
+  font-size: 1.75rem;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+.t-h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+.t-h3 {
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.006em;
+}
+.t-metric,
+.t-metric-lg,
+.t-metric-xl {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.t-metric {
+  font-size: 1.75rem;
+}
+.t-metric-lg {
+  font-size: 2.5rem;
+}
+.t-metric-xl {
+  font-size: 4rem;
+  letter-spacing: -0.04em;
+}
+.t-caption {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--mute);
+}
+
+.kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.6s var(--ease-out-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* MapLibre controls follow the theme */
+.maplibregl-ctrl-group {
+  background: var(--surface) !important;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow) !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--line) !important;
+}
+:root[data-theme='dark'] .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+
+/* Client report: print as a clean light document, one chapter per page */
+@media print {
+  :root {
+    color-scheme: light;
+  }
+  html,
+  body,
+  #root {
+    height: auto;
+    background: #fff !important;
+  }
+  .report-chapter {
+    break-before: page;
+  }
+  .report-chapter,
+  figure,
+  table {
+    break-inside: avoid;
+  }
+}
+
+/* Interaction states, shared by every control (BRAND.md) */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.card-interactive {
+  transition:
+    transform 0.2s var(--ease-out-expo),
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.card-interactive:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--ink-2) 40%, transparent);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+}
+.card-interactive:active {
+  transform: translateY(0) scale(0.995);
+}
+.text-link {
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s;
+}
+.text-link:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* Legal and long-form text */
+.legal p,
+.legal ul,
+.legal address {
+  margin-top: 0.875rem;
+  color: var(--ink-2);
+  line-height: 1.7;
+  max-width: 65ch;
+}
+.legal ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.legal li + li {
+  margin-top: 0.375rem;
+}
+.legal b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.legal a:not([class]) {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+}
+.legal a:not([class]):hover {
+  text-decoration-color: var(--ink);
+}
+.legal code {
+  font-size: 0.875em;
+  background: var(--surface-2);
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+}
+.legal .not-prose p {
+  margin-top: 0;
+}
+
+/* The map's attribution sits above the zone chips on the Taste Zones stage */
+[data-shot='stage'] .maplibregl-ctrl-bottom-right {
+  bottom: 44px;
+}
+
+/* Image pie: slices fade in one after another */
+@keyframes pie-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.pie-slice {
+  animation: pie-in 0.5s var(--ease-out-expo) both;
+}
+/* Clicking a slice focuses it: no browser outline for that; keyboard users get the slice's own ring instead. */
+.pie-slice:focus {
+  outline: none;
+}
+.pie-slice:focus-visible path {
+  stroke: currentColor;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Calmer, not frozen: no entrance animation, short plain easing instead of the spring. */
+  .pie-slice {
+    animation: none;
+    transition-duration: 0.3s !important;
+    transition-timing-function: ease-out !important;
+  }
+}
+
+/* A horizontal chip row fades at its right edge, so a cut-off chip reads as "scroll for more" */
+.chip-fade {
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+}
+
+/* Cover-art map markers (MapView markers): a place shown as a disc of its own covers. */
+.tg-cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+/* MapLibre positions the marker with transform: animate the children, never the marker itself. */
+.tg-cover > * {
+  animation: tg-cover-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tg-cover-disc {
+  width: 64px;
+  height: 64px;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: grid;
+  gap: 2px;
+  background: var(--ring);
+  box-shadow:
+    0 0 0 3px var(--ring),
+    0 0 0 7px color-mix(in oklab, var(--ring) 25%, transparent),
+    0 14px 30px -10px rgba(0, 0, 0, 0.5);
+}
+.tg-cover-disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tg-cover-n3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.tg-cover-n3 img:first-child {
+  grid-row: span 2;
+}
+.tg-cover-n2 {
+  grid-template-columns: 1fr 1fr;
+}
+.tg-cover-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #16130f;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.35);
+}
+.tg-cover-label span {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #5e574d;
+}
+@keyframes tg-cover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tg-cover > * {
+    animation: none;
+  }
+}
+
+/* Text balance everywhere: headings even out their lines, paragraphs avoid a lone last word. */
+h1,
+h2,
+h3,
+.kicker {
+  text-wrap: balance;
+}
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+/* A slim scrollbar in the page's own colors (Firefox, then Chromium and Safari). */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--ink) 28%, transparent) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--ink) 22%, transparent);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--ink) 40%, transparent);
+  background-clip: content-box;
+}

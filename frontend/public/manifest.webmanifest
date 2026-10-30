@@ -1,0 +1,13 @@
+{
+  "name": "Tastegeist",
+  "short_name": "Tastegeist",
+  "description": "Campaign strategy from cultural taste data, place by place.",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#0b0a09",
+  "theme_color": "#0b0a09",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

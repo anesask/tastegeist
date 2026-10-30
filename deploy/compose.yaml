@@ -1,0 +1,39 @@
+# Tastegeist on a VPS where Traefik already owns ports 80/443 (external network "proxy",
+# entrypoint "websecure", cert resolver "letsencrypt"). Run from this folder:
+#   docker compose -p tastegeist up -d --build
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      BACKUP_DIR: /backups
+    volumes:
+      # Qloo cache, model output and campaigns: copied here privately, never in git (Qloo terms)
+      - ./data:/app/backend/data
+      - ./backups:/backups
+    networks: [proxy]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: proxy
+      # the app at tastegeist.app; tastegeist.com and www redirect to it
+      traefik.http.routers.tastegeist.rule: Host(`tastegeist.app`) || Host(`www.tastegeist.app`) || Host(`tastegeist.com`) || Host(`www.tastegeist.com`)
+      traefik.http.routers.tastegeist.entrypoints: websecure
+      traefik.http.routers.tastegeist.tls: "true"
+      traefik.http.routers.tastegeist.tls.certresolver: letsencrypt
+      traefik.http.routers.tastegeist.middlewares: tastegeist-canonical,tastegeist-compress
+      # gzip/brotli for the app (Traefik leaves the live progress stream, text/event-stream, alone)
+      traefik.http.middlewares.tastegeist-compress.compress: "true"
+      traefik.http.middlewares.tastegeist-canonical.redirectregex.regex: ^https?://(www\.tastegeist\.app|(www\.)?tastegeist\.com)/(.*)
+      traefik.http.middlewares.tastegeist-canonical.redirectregex.replacement: https://tastegeist.app/$${3}
+      traefik.http.middlewares.tastegeist-canonical.redirectregex.permanent: "true"
+      traefik.http.services.tastegeist.loadbalancer.server.port: "8000"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+networks:
+  proxy:
+    external: true
